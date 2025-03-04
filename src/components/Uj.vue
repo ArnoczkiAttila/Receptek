@@ -1,14 +1,14 @@
 <script setup>
-import { ref } from 'vue';
-
-    const hozzavalok = ref([
-        {'id':1,'nev':'Liszt','mertekegyseg':'g'},
-        {'id':2,'nev':'Cukor','mertekegyseg':'g'},
-        {'id':3,'nev':'Só','mertekegyseg':'g'},
-        {'id':4,'nev':'Víz','mertekegyseg':'ml'},
-        {'id':5,'nev':'Tojás','mertekegyseg':'db'},
-        {'id':6,'nev':'Olaj','mertekegyseg':'ml'},
-    ]);
+import axios from 'axios';
+import { onMounted, ref } from 'vue';
+    
+    const recept = ref({
+        nev:'',
+        ido:0,
+        nehezseg:'',
+        leiras:''
+    });
+    const hozzavalok = ref([]);
     const inputs = ref([
         {'id':'','mennyiseg':0,'mertekegyseg':''}
     ]);
@@ -23,19 +23,55 @@ import { ref } from 'vue';
     const addHozzavalo = () => {
         inputs.value.push({'id':'','mennyiseg':0,'mertekegyseg':''});
     } 
+    const deleteHozzavalo = (index) => {
+        inputs.value.splice(index,1);
+    } 
+    const getHozzavalo = async () => {
+        try {
+            const response = await axios.get('http://localhost/api/hozzavalo');
+            hozzavalok.value = response.data;
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    const addRecept = async () => {
+        try {
+            const response = await axios.post('http://localhost/api/recept',{
+                'nev':recept.value.nev,
+                'ido':recept.value.ido,
+                'nehezseg':recept.value.nehezseg,
+                'leiras':recept.value.leiras,
+                'hozzavalok':inputs.value
+            });
+            recept.value = {
+                nev:'',
+                ido:0,
+                nehezseg:'',
+                leiras:''
+            };
+            inputs.value = [{'id':'','mennyiseg':0,'mertekegyseg':''}];
+            console.log(response);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    onMounted(()=>{
+        getHozzavalo();
+    })
 </script>
 <template>
+    <h2>Új recept hozzáadása</h2>
     <div class="mb-2">
         <label for="nev" class="form-label">Név</label>
-        <input type="text" name="" id="nev" class="form-control">
+        <input type="text" name="" id="nev" v-model="recept.nev" class="form-control">
     </div>
     <div class="mb-2">
         <label for="elkeszites" class="form-label">Elkészítési idő (perc)</label>
-        <input type="text" name="" id="elkeszites" class="form-control">
+        <input type="text" name="" v-model="recept.ido" id="elkeszites" class="form-control">
     </div>
     <div class="mb-2">
         <label for="nehezseg" class="form-label">Nehézség</label>
-        <select name="" id="nehezseg" class="form-select">
+        <select name="" id="nehezseg" class="form-select" v-model="recept.nehezseg">
             <option value="Könnyű">Könnyű</option>
             <option value="Közepes">Közepes</option>
             <option value="Nehéz">Nehéz</option>
@@ -43,11 +79,11 @@ import { ref } from 'vue';
     </div>
     <div class="mb-2">
         <label for="utmutato" class="form-label">Elkészítési útmutató</label>
-        <textarea name="" id="utmutato" class="form-control"></textarea>
+        <textarea name="" id="utmutato" class="form-control" v-model="recept.leiras"></textarea>
     </div>
     <div class="mb-2 d-flex align-items-center gap-2">
         <span>Hozzávalók</span>
-        <button class="btn btn-warning">+</button>
+        <button class="btn btn-warning" @click="addHozzavalo">+</button>
     </div>
     <div class="mb-2">
         <div class="input-group mb-3" v-for="(item,index) in inputs">
@@ -57,7 +93,12 @@ import { ref } from 'vue';
             <input type="number" name="" id="" class="form-control" v-model="item.mennyiseg">
             
             <span class="input-group-text">{{ item.mertekegyseg }}</span>
-            <button class="btn btn-danger" type="button" id="button-addon2">X</button>
+            <button class="btn btn-danger" type="button" id="button-addon2" @click="deleteHozzavalo(index)">X</button>
         </div>
+    </div>
+    <div class="mb-2">
+        <button class="btn btn-warning" @click="addRecept">
+            Recept mentése
+        </button>
     </div>
 </template>

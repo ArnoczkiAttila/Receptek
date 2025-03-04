@@ -1,6 +1,11 @@
 <script setup>
   import Uj from './components/Uj.vue';
   import Bongeszes from './components/Bongeszes.vue';
+  import { ref, shallowRef } from 'vue';
+
+  const uj = Uj;
+  const bongeszes = Bongeszes;
+  const selectedComponent = shallowRef(uj);
 </script>
 
 <template>
@@ -14,10 +19,10 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav mx-auto">
             <li class="nav-item mx-3">
-              <a class="nav-link active">Új recept hozzáadása</a>
+              <button class="nav-link" :class="selectedComponent == uj?'active':''" @click="selectedComponent = uj">Új recept hozzáadása</button>
             </li>
             <li class="nav-item mx-3">
-              <a class="nav-link">Receptek böngészése</a>
+              <button class="nav-link" :class="selectedComponent == bongeszes?'active':''" @click="selectedComponent = bongeszes">Receptek böngészése</button>
             </li>
           </ul>
         </div>
@@ -26,7 +31,7 @@
 
     <div class="row">
       <div class="col">
-        <Uj/>
+        <component :is="selectedComponent"/>
       </div>
     </div>
   </div>
