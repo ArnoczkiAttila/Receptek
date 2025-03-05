@@ -60,9 +60,9 @@ import { onMounted, ref } from 'vue';
     })
 </script>
 <template>
-    <h2>Új recept hozzáadása</h2>
+    <h2 class="text-warning">Új recept hozzáadása</h2>
     <div class="mb-2">
-        <label for="nev" class="form-label">Név</label>
+        <label for="nev" class="form-label ">Név</label>
         <input type="text" name="" id="nev" v-model="recept.nev" class="form-control">
     </div>
     <div class="mb-2">
@@ -82,7 +82,7 @@ import { onMounted, ref } from 'vue';
         <textarea name="" id="utmutato" class="form-control" v-model="recept.leiras"></textarea>
     </div>
     <div class="mb-2 d-flex align-items-center gap-2">
-        <span>Hozzávalók</span>
+        <span class="text-warning">Hozzávalók</span>
         <button class="btn btn-warning" @click="addHozzavalo">+</button>
     </div>
     <div class="mb-2">
